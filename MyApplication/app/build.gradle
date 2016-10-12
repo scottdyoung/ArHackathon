@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-
+def VUFORIA_HOME = System.getenv('VUFORIA_HOME')
 android {
     compileSdkVersion 24
     buildToolsVersion "24.0.1"
@@ -15,6 +15,9 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            ndk {
+                abiFilters "armeabi-v7a"
+            }
         }
         debug {
             minifyEnabled false
@@ -33,5 +36,5 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:24.2.1'
     testCompile 'junit:junit:4.12'
-    compile files("$System.env.VUFORIA_HOME/build/java/vuforia/Vuforia.jar")
+    compile files("$VUFORIA_HOME/build/java/vuforia/Vuforia.jar")
 }
