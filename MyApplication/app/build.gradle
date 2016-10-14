@@ -5,7 +5,7 @@ android {
     buildToolsVersion "24.0.1"
     defaultConfig {
         applicationId "hackathon.issinc.com.arhackathon"
-        minSdkVersion 9
+        minSdkVersion 17
         targetSdkVersion 24
         versionCode 600
         versionName "6.0"

@@ -1,16 +1,19 @@
 package hackathon.issinc.com.arhackathon;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import com.vuforia.Vuforia;
 
 import hackathon.issinc.com.arhackathon.activities.CameraActivity;
+import hackathon.issinc.com.arhackathon.activities.GameActivity;
 
-public class MainActivity extends AppCompatActivity {
+public final class MainActivity extends AppCompatActivity {
     private InitVuforiaTask initVuforiaTask;
     private Activity cameraActivity;
     private MainActivity self;
@@ -29,6 +32,16 @@ public class MainActivity extends AppCompatActivity {
             String logMessage = "Initializing Vuforia SDK failed";
             Log.e(this.getLocalClassName(), logMessage);
         }
+    }
+
+    /**
+     * callback for when the user clicks the start button
+     * @param view the initial view when the app starts
+     */
+    public void startGame(final View view) {
+
+        final Intent intent = new Intent(this, GameActivity.class);
+        startActivity(intent);
     }
 
     private class InitVuforiaTask extends AsyncTask<Void, Integer, Boolean> {
