@@ -10,8 +10,7 @@ import android.view.View;
 
 import com.vuforia.Vuforia;
 
-import hackathon.issinc.com.arhackathon.activities.CameraActivity;
-import hackathon.issinc.com.arhackathon.activities.GameActivity;
+import hackathon.issinc.com.arhackathon.activities.Game.GameActivity;
 
 public final class MainActivity extends AppCompatActivity {
     private InitVuforiaTask initVuforiaTask;
@@ -23,15 +22,6 @@ public final class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        this.cameraActivity = new CameraActivity();
-        this.self = this;
-        try {
-            this.initVuforiaTask = new InitVuforiaTask();
-            this.initVuforiaTask.execute();
-        } catch (final Exception e) {
-            String logMessage = "Initializing Vuforia SDK failed";
-            Log.e(this.getLocalClassName(), logMessage);
-        }
     }
 
     /**
