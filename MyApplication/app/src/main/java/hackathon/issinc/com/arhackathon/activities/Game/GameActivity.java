@@ -63,7 +63,7 @@ public final class GameActivity extends Activity implements SampleApplicationCon
 
         this.vuforiaSession = new VuforiaSession(this);
         startLoadingAnimation();
-        mDatasetStrings.add("StonesAndChips.xml");
+        mDatasetStrings.add("Hackathon.xml");
         mDatasetStrings.add("Tarmac.xml");
 
         vuforiaSession
@@ -73,40 +73,23 @@ public final class GameActivity extends Activity implements SampleApplicationCon
 
         // Load any sample specific textures:
         mTextures = new Vector<Texture>();
-//        loadTextures();
+        loadTextures();
 
-//        TextView textView = new TextView(this);
-//        textView.setTextSize(40);
-//        textView.setText("test");
-//
-//        ViewGroup layout = (ViewGroup) findViewById(R.id.test_message_container);
-//        layout.addView(textView);
-//
-//        this.startAR(CameraDevice.CAMERA_DIRECTION.CAMERA_DIRECTION_DEFAULT);
-//
-//
-//        startLoadingAnimation();
-//        mDatasetStrings.add("StonesAndChips.xml");
-//        mDatasetStrings.add("Tarmac.xml");
-//
-//        vuforiaAppSession
-//                .initAR(this, ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-//
-//        mGestureDetector = new GestureDetector(this, new GestureListener());
+    }
 
-        // Load any sample specific textures:
-//        mTextures = new Vector<Texture>();
-//        loadTextures();
+    // We want to load specific textures from the APK, which we will later use
+    // for rendering.
 
-//        this.cameraActivity = new CameraActivity();
-//        this.self = this;
-//        try {
-//            this.initVuforiaTask = new MainActivity.InitVuforiaTask();
-//            this.initVuforiaTask.execute();
-//        } catch (final Exception e) {
-//            String logMessage = "Initializing Vuforia SDK failed";
-//            Log.e(this.getLocalClassName(), logMessage);
-//        }
+    private void loadTextures()
+    {
+        mTextures.add(Texture.loadTextureFromApk("TextureTeapotBrass.png",
+                getAssets()));
+        mTextures.add(Texture.loadTextureFromApk("TextureTeapotBlue.png",
+                getAssets()));
+        mTextures.add(Texture.loadTextureFromApk("TextureTeapotRed.png",
+                getAssets()));
+        mTextures.add(Texture.loadTextureFromApk("ImageTargets/Buildings.jpeg",
+                getAssets()));
     }
 
     // Callback for configuration changes the activity handles itself
@@ -260,7 +243,7 @@ public final class GameActivity extends Activity implements SampleApplicationCon
             }
 
             boolean result = CameraDevice.getInstance().setFocusMode(
-                    CameraDevice.FOCUS_MODE.FOCUS_MODE_CONTINUOUSAUTO);
+                    CameraDevice.FOCUS_MODE.FOCUS_MODE_NORMAL);
         } else
         {
             Log.e(LOGTAG, exception.getString());
