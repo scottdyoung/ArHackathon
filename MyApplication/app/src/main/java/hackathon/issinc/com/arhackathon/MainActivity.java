@@ -10,7 +10,11 @@ import android.view.View;
 
 import com.vuforia.Vuforia;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import hackathon.issinc.com.arhackathon.activities.Game.GameActivity;
+import hackathon.issinc.com.arhackathon.puzzles.Puzzle;
 
 public final class MainActivity extends AppCompatActivity {
     private InitVuforiaTask initVuforiaTask;

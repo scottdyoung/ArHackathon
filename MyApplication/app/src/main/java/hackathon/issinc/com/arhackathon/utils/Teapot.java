@@ -11,10 +11,11 @@ package hackathon.issinc.com.arhackathon.utils;
 
 import java.nio.Buffer;
 
+import hackathon.issinc.com.arhackathon.puzzles.PuzzleImage;
 
-public class Teapot extends MeshObject
-{
-    
+
+public class Teapot extends MeshObject implements PuzzleImage {
+
     private Buffer mVertBuff;
     private Buffer mTexCoordBuff;
     private Buffer mNormBuff;
@@ -1455,8 +1456,12 @@ public class Teapot extends MeshObject
         mIndBuff = fillBuffer(TEAPOT_INDICES);
         indicesNumber = TEAPOT_INDICES.length;
     }
-    
-    
+
+    @Override
+    public int getNumVertices() {
+        return this.verticesNumber;
+    }
+
     public int getNumObjectIndex()
     {
         return indicesNumber;
@@ -1494,5 +1499,5 @@ public class Teapot extends MeshObject
         
         return result;
     }
-    
+
 }

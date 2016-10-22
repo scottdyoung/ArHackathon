@@ -26,13 +26,19 @@ import com.vuforia.Tracker;
 import com.vuforia.TrackerManager;
 import com.vuforia.Vuforia;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
+import hackathon.issinc.com.arhackathon.GameState;
 import hackathon.issinc.com.arhackathon.R;
 import hackathon.issinc.com.arhackathon.SampleApplicationControl;
 import hackathon.issinc.com.arhackathon.SampleApplicationException;
 import hackathon.issinc.com.arhackathon.VuforiaSession;
+import hackathon.issinc.com.arhackathon.puzzles.Puzzle;
 import hackathon.issinc.com.arhackathon.utils.LoadingDialogHandler;
 import hackathon.issinc.com.arhackathon.utils.SampleApplicationGLView;
 import hackathon.issinc.com.arhackathon.utils.Texture;
@@ -44,11 +50,8 @@ public final class GameActivity extends Activity implements SampleApplicationCon
     private ImageTargetRenderer mRenderer;
     private RelativeLayout mUILayout;
     private SampleApplicationGLView mGlView;
-    private Vector<Texture> mTextures;
     LoadingDialogHandler loadingDialogHandler = new LoadingDialogHandler(this);
     private DataSet mCurrentDataset;
-    private int mCurrentDatasetSelectionIndex = 0;
-    private ArrayList<String> mDatasetStrings = new ArrayList<String>();
     private AlertDialog mErrorDialog;
     private boolean mSwitchDatasetAsap = false;
     private boolean mExtendedTracking = false;
@@ -56,40 +59,46 @@ public final class GameActivity extends Activity implements SampleApplicationCon
     private boolean mFlash = false;
     private View mFlashOptionView;
 
+    private GameState gameState;
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
+        final Map<String, Puzzle> puzzles = new HashMap<>();
+        final Vector<Texture> textures = new Vector<Texture>();
+        textures.add(Texture.loadTextureFromApk("TextureTeapotRed.png",
+                getAssets()));
+        textures.add(Texture.loadTextureFromApk("TextureTeapotBrass.png",
+                getAssets()));
+        textures.add(Texture.loadTextureFromApk("ImageTargets/test.png",
+                getAssets()));
+        final Puzzle testPuzzle = new Puzzle("test.xml", textures);
+        puzzles.put("test", testPuzzle);
+        this.gameState = new GameState(puzzles);
+        this.gameState.setActivePuzzle("test");
+
         this.vuforiaSession = new VuforiaSession(this);
         startLoadingAnimation();
-        mDatasetStrings.add("Hackathon.xml");
-        mDatasetStrings.add("Tarmac.xml");
-
-        vuforiaSession
-                .initAR(this, ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
-//        mGestureDetector = new GestureDetector(this, new GestureListener());
-
-        // Load any sample specific textures:
-        mTextures = new Vector<Texture>();
-        loadTextures();
-
+        vuforiaSession.initAR(this, ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
-    // We want to load specific textures from the APK, which we will later use
-    // for rendering.
-
-    private void loadTextures()
+    @Override
+    protected void onDestroy()
     {
-        mTextures.add(Texture.loadTextureFromApk("TextureTeapotBrass.png",
-                getAssets()));
-        mTextures.add(Texture.loadTextureFromApk("TextureTeapotBlue.png",
-                getAssets()));
-        mTextures.add(Texture.loadTextureFromApk("TextureTeapotRed.png",
-                getAssets()));
-        mTextures.add(Texture.loadTextureFromApk("ImageTargets/Buildings.jpeg",
-                getAssets()));
+        Log.d(LOGTAG, "onDestroy");
+        super.onDestroy();
+
+        try
+        {
+            vuforiaSession.stopAR();
+        } catch (SampleApplicationException e)
+        {
+            Log.e(LOGTAG, e.getString());
+        }
+
+        System.gc();
     }
 
     // Callback for configuration changes the activity handles itself
@@ -114,7 +123,7 @@ public final class GameActivity extends Activity implements SampleApplicationCon
         mGlView.init(translucent, depthSize, stencilSize);
 
         mRenderer = new ImageTargetRenderer(this, vuforiaSession);
-        mRenderer.setTextures(mTextures);
+        mRenderer.setTextures(this.gameState.getActiveTextures());
         mGlView.setRenderer(mRenderer);
     }
 
@@ -157,7 +166,7 @@ public final class GameActivity extends Activity implements SampleApplicationCon
             return false;
 
         if (!mCurrentDataset.load(
-                mDatasetStrings.get(mCurrentDatasetSelectionIndex),
+                this.gameState.getActiveDataSetName(),
                 STORAGE_TYPE.STORAGE_APPRESOURCE))
             return false;
 
@@ -194,26 +203,25 @@ public final class GameActivity extends Activity implements SampleApplicationCon
         if (objectTracker == null)
             return false;
 
-//        if (mCurrentDataset != null && mCurrentDataset.isActive())
-//        {
-//            if (objectTracker.getActiveDataSet().equals(mCurrentDataset)
-//                    && !objectTracker.deactivateDataSet(mCurrentDataset))
-//            {
-//                result = false;
-//            } else if (!objectTracker.destroyDataSet(mCurrentDataset))
-//            {
-//                result = false;
-//            }
-//
-//            mCurrentDataset = null;
-//        }
+        if (mCurrentDataset != null && mCurrentDataset.isActive())
+        {
+            if (objectTracker.getActiveDataSet().equals(mCurrentDataset)
+                    && !objectTracker.deactivateDataSet(mCurrentDataset))
+            {
+                result = false;
+            } else if (!objectTracker.destroyDataSet(mCurrentDataset))
+            {
+                result = false;
+            }
+
+            mCurrentDataset = null;
+        }
 
         return result;
     }
 
     @Override
-    public void onInitARDone(SampleApplicationException exception)
-    {
+    public void onInitARDone(SampleApplicationException exception) {
 
         if (exception == null)
         {

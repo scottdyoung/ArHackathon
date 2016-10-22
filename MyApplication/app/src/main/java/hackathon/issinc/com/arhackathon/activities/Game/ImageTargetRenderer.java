@@ -33,9 +33,11 @@ import javax.microedition.khronos.opengles.GL10;
 import hackathon.issinc.com.arhackathon.VuforiaSession;
 import hackathon.issinc.com.arhackathon.utils.CubeShaders;
 import hackathon.issinc.com.arhackathon.utils.LoadingDialogHandler;
+import hackathon.issinc.com.arhackathon.puzzles.PuzzleImage;
 import hackathon.issinc.com.arhackathon.utils.SampleApplication3DModel;
 import hackathon.issinc.com.arhackathon.utils.SampleUtils;
 import hackathon.issinc.com.arhackathon.utils.Teapot;
+import hackathon.issinc.com.arhackathon.puzzles.test.Test;
 import hackathon.issinc.com.arhackathon.utils.Texture;
 
 
@@ -56,6 +58,7 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer, SampleAppRen
     private int mvpMatrixHandle;
     private int texSampler2DHandle;
     
+    private Test mTest;
     private Teapot mTeapot;
     
     private float kBuildingScale = 12.0f;
@@ -157,8 +160,8 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer, SampleAppRen
             "texSampler2D");
 
         if(!mModelsLoaded) {
+            mTest = new Test();
             mTeapot = new Teapot();
-
             try {
                 mBuildingsModel = new SampleApplication3DModel();
                 mBuildingsModel.loadModel(mActivity.getResources().getAssets(),
@@ -208,9 +211,9 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer, SampleAppRen
                     .convertPose2GLMatrix(result.getPose());
             float[] modelViewMatrix = modelViewMatrix_Vuforia.getData();
 
-            int textureIndex = trackable.getName().equalsIgnoreCase("stones") ? 0
+            int textureIndex = trackable.getName().equalsIgnoreCase("test") ? 0
                     : 1;
-            textureIndex = trackable.getName().equalsIgnoreCase("tarmac") ? 2
+            textureIndex = trackable.getName().equalsIgnoreCase("fish") ? 2
                     : textureIndex;
 
             // deal with the modelview and projection matrices
@@ -232,10 +235,12 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer, SampleAppRen
             GLES20.glUseProgram(shaderProgramID);
 
             if (!mActivity.isExtendedTrackingActive()) {
+                final PuzzleImage puzzleImage =
+                        trackable.getName().equals("test") ? mTest : mTeapot;
                 GLES20.glVertexAttribPointer(vertexHandle, 3, GLES20.GL_FLOAT,
-                        false, 0, mTeapot.getVertices());
+                        false, 0, puzzleImage.getVertices());
                 GLES20.glVertexAttribPointer(textureCoordHandle, 2,
-                        GLES20.GL_FLOAT, false, 0, mTeapot.getTexCoords());
+                        GLES20.GL_FLOAT, false, 0, puzzleImage.getTexCoords());
 
                 GLES20.glEnableVertexAttribArray(vertexHandle);
                 GLES20.glEnableVertexAttribArray(textureCoordHandle);
@@ -251,9 +256,11 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer, SampleAppRen
                         modelViewProjection, 0);
 
                 // finally draw the teapot
-                GLES20.glDrawElements(GLES20.GL_TRIANGLES,
-                        mTeapot.getNumObjectIndex(), GLES20.GL_UNSIGNED_SHORT,
-                        mTeapot.getIndices());
+//                GLES20.glDrawElements(GLES20.GL_TRIANGLES,
+//                        mTest.getNumObjectIndex(), GLES20.GL_UNSIGNED_SHORT,
+//                        mTest.getIndices());
+                GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, puzzleImage.getNumObjectVertex());
+
 
                 // disable the enabled arrays
                 GLES20.glDisableVertexAttribArray(vertexHandle);
