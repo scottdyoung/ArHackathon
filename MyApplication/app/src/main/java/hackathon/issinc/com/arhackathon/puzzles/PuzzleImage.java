@@ -8,4 +8,5 @@ public interface PuzzleImage {
     public Buffer getVertices();
     public Buffer getTexCoords();
     public int getNumObjectVertex();
+    public Buffer getIndices();
 }

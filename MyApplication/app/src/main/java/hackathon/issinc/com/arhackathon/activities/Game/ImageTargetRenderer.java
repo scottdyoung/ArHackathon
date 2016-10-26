@@ -211,32 +211,28 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer, SampleAppRen
                     .convertPose2GLMatrix(result.getPose());
             float[] modelViewMatrix = modelViewMatrix_Vuforia.getData();
 
-            int textureIndex = trackable.getName().equalsIgnoreCase("test") ? 0
-                    : 1;
-            textureIndex = trackable.getName().equalsIgnoreCase("fish") ? 2
+            int textureIndex = trackable.getName().equalsIgnoreCase("stones") ? 2
+                    : 0;
+            textureIndex = trackable.getName().equalsIgnoreCase("12798920_10207976858916009_4312872490703458757_n") ? 1
                     : textureIndex;
 
             // deal with the modelview and projection matrices
             float[] modelViewProjection = new float[16];
 
-            if (!mActivity.isExtendedTrackingActive()) {
-                Matrix.translateM(modelViewMatrix, 0, 0.0f, 0.0f,
-                        OBJECT_SCALE_FLOAT);
-                Matrix.scaleM(modelViewMatrix, 0, OBJECT_SCALE_FLOAT,
-                        OBJECT_SCALE_FLOAT, OBJECT_SCALE_FLOAT);
-            } else {
-                Matrix.rotateM(modelViewMatrix, 0, 90.0f, 1.0f, 0, 0);
-                Matrix.scaleM(modelViewMatrix, 0, kBuildingScale,
-                        kBuildingScale, kBuildingScale);
-            }
+            Matrix.translateM(modelViewMatrix, 0, 0.0f, 0.0f,
+                    OBJECT_SCALE_FLOAT);
+            Matrix.scaleM(modelViewMatrix, 0, OBJECT_SCALE_FLOAT,
+                    OBJECT_SCALE_FLOAT, OBJECT_SCALE_FLOAT);
             Matrix.multiplyMM(modelViewProjection, 0, projectionMatrix, 0, modelViewMatrix, 0);
 
             // activate the shader program and bind the vertex/normal/tex coords
             GLES20.glUseProgram(shaderProgramID);
 
-            if (!mActivity.isExtendedTrackingActive()) {
+            if (true) {
+                GLES20.glDisable(GLES20.GL_CULL_FACE);
+
                 final PuzzleImage puzzleImage =
-                        trackable.getName().equals("test") ? mTest : mTeapot;
+                        trackable.getName().equals("stones") ? mTest : mTeapot;
                 GLES20.glVertexAttribPointer(vertexHandle, 3, GLES20.GL_FLOAT,
                         false, 0, puzzleImage.getVertices());
                 GLES20.glVertexAttribPointer(textureCoordHandle, 2,
@@ -257,14 +253,14 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer, SampleAppRen
 
                 // finally draw the teapot
 //                GLES20.glDrawElements(GLES20.GL_TRIANGLES,
-//                        mTest.getNumObjectIndex(), GLES20.GL_UNSIGNED_SHORT,
-//                        mTest.getIndices());
+//                        puzzleImage.getNumObjectIndex(), GLES20.GL_UNSIGNED_SHORT,
+//                        puzzleImage.getIndices());
                 GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, puzzleImage.getNumObjectVertex());
 
 
                 // disable the enabled arrays
-                GLES20.glDisableVertexAttribArray(vertexHandle);
-                GLES20.glDisableVertexAttribArray(textureCoordHandle);
+//                GLES20.glDisableVertexAttribArray(vertexHandle);
+//                GLES20.glDisableVertexAttribArray(textureCoordHandle);
             } else {
                 GLES20.glDisable(GLES20.GL_CULL_FACE);
                 GLES20.glVertexAttribPointer(vertexHandle, 3, GLES20.GL_FLOAT,

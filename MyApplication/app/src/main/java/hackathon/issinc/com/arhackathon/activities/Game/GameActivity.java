@@ -54,7 +54,6 @@ public final class GameActivity extends Activity implements SampleApplicationCon
     private DataSet mCurrentDataset;
     private AlertDialog mErrorDialog;
     private boolean mSwitchDatasetAsap = false;
-    private boolean mExtendedTracking = false;
 
     private boolean mFlash = false;
     private View mFlashOptionView;
@@ -66,8 +65,16 @@ public final class GameActivity extends Activity implements SampleApplicationCon
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
+        this.loadTestPuzzle();
+
+        this.vuforiaSession = new VuforiaSession(this);
+        startLoadingAnimation();
+        vuforiaSession.initAR(this, ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+    }
+
+    private void loadTestPuzzle() {
         final Map<String, Puzzle> puzzles = new HashMap<>();
-        final Vector<Texture> textures = new Vector<Texture>();
+        final Vector<Texture> textures = new Vector<>();
         textures.add(Texture.loadTextureFromApk("TextureTeapotRed.png",
                 getAssets()));
         textures.add(Texture.loadTextureFromApk("TextureTeapotBrass.png",
@@ -78,10 +85,6 @@ public final class GameActivity extends Activity implements SampleApplicationCon
         puzzles.put("test", testPuzzle);
         this.gameState = new GameState(puzzles);
         this.gameState.setActivePuzzle("test");
-
-        this.vuforiaSession = new VuforiaSession(this);
-        startLoadingAnimation();
-        vuforiaSession.initAR(this, ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
     @Override
@@ -177,10 +180,7 @@ public final class GameActivity extends Activity implements SampleApplicationCon
         for (int count = 0; count < numTrackables; count++)
         {
             Trackable trackable = mCurrentDataset.getTrackable(count);
-            if(isExtendedTrackingActive())
-            {
-                trackable.startExtendedTracking();
-            }
+            trackable.startExtendedTracking();
 
             String name = "Current Dataset : " + trackable.getName();
             trackable.setUserData(name);
@@ -413,10 +413,5 @@ public final class GameActivity extends Activity implements SampleApplicationCon
         {
             Log.e(LOGTAG, e.getString());
         }
-    }
-
-    boolean isExtendedTrackingActive()
-    {
-        return mExtendedTracking;
     }
 }
